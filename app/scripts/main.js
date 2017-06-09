@@ -52,16 +52,28 @@
 
     this.currentUrl = undefined;
 
+    var decoderWorker = new Worker('scripts/jsqrcode/qrworker.js');
 
     this.detectQRCode = function(imageData, callback) {
       callback = callback || function() {};
 
-      client.decode(imageData, function(result) {
-        if(result !== undefined) {
-          self.currentUrl = result;
+      decoderWorker.postMessage(imageData);
+
+      decoderWorker.onmessage = function(result) {
+        var url = result.data;
+        if(url !== undefined) {
+          self.currentUrl = url;
         }
-        callback(result);
-      });
+        callback(url);
+      };
+      decoderWorker.onerror = function(error) {
+        function WorkerExeption(message) {
+          this.name = "WorkerExeption";
+          this.message = message;
+        };
+        throw new WorkerExeption('Decoder error');
+        callback(undefined);
+      };
     };
 
     this.showDialog = function(url) {

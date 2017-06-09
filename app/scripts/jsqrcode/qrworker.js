@@ -17,6 +17,7 @@ importScripts('grid.js',
     'databr.js');
 
 
+
 self.onmessage = function(e) {
   var data = e.data;
 
@@ -25,7 +26,7 @@ self.onmessage = function(e) {
     var height = data.height;
     var result = qrcode.decode(width, height, data);
     postMessage(result);
-  } 
+  }
   catch(e) {
     postMessage(undefined);
   }
